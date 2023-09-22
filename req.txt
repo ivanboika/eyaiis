@@ -1,0 +1,6 @@
+pyqt5
+pywin32
+opencv-python
+numpy
+Pillow
+datetime
