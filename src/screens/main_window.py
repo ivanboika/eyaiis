@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QSlider, QPushButton
+from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QSlider, QPushButton, QCheckBox
 from src.widgets.image_label import ImageLabel, QPixmap
 from PyQt5.QtCore import Qt
 from win32api import GetSystemMetrics
@@ -24,6 +24,9 @@ class Main(QDialog):
         self.edit_image = QLabel()
         self.edit_image.setStyleSheet(style)
 
+        self.blurCheckBox = QCheckBox()
+        self.closingCheckBox = QCheckBox()
+
         self.noise_slider = QSlider(Qt.Horizontal)
         self.threshold_slider = QSlider(Qt.Horizontal)
 
@@ -47,12 +50,12 @@ class Main(QDialog):
         if self.start_image.text() == '':
             pass
         else:
-            image = cv2.imread(self.start_image.text())
+            image = cv2.imread(self.start_image.text(), cv2.IMREAD_GRAYSCALE)
             mean = 0
-            noise = np.random.normal(mean, self.noise_slider.value(), image.shape).astype(np.uint8)
+            noise = np.random.normal(mean, self.noise_slider.value() / 10, image.shape).astype(np.uint8)
             noisy_image = cv2.add(image, noise)
             data = im.fromarray(noisy_image)
-            
+
             data.save('image.png')
             self.noise_image.setPixmap(QPixmap('image.png'))
 
@@ -64,9 +67,71 @@ class Main(QDialog):
         self.edit_image.setPixmap(QPixmap())
 
     def restore_clicked(self):
-        noisy_image = cv2.imread('image.png')
-        ret, restored_image = cv2.threshold(noisy_image, self.threshold_slider.value(), 255, cv2.THRESH_BINARY)
-        data = im.fromarray(restored_image)
+        noisy_image = cv2.imread('image.png', cv2.IMREAD_GRAYSCALE)
+
+        height, width = noisy_image.shape
+
+        if self.blurCheckBox.isChecked():
+            noisy_image = cv2.GaussianBlur(noisy_image, (1, 1), cv2.BORDER_DEFAULT)
+
+        for i in range(height - 1):
+            for j in range(width - 1):
+                middle = 0
+                if i == 0 and j == 0:
+                    middle = (noisy_image[i][j + 1] / 8 + noisy_image[i][j + 2] / 8 +
+                              noisy_image[i + 1][j] / 8 + noisy_image[i + 1][j + 1] / 8 +
+                              noisy_image[i + 1][j + 2] / 8 + noisy_image[i + 2][j] / 8 +
+                              noisy_image[i + 2][j + 1] / 8 + noisy_image[i][j + 2] / 8)
+                elif i == 0:
+                    middle = (noisy_image[i][j - 1] / 5 +
+                              noisy_image[i][j + 1] / 5 +
+                              noisy_image[i + 1][j - 1] / 5 + noisy_image[i + 1][j + 1] / 5 +
+                              noisy_image[i + 1][j] / 5)
+                elif j == 0:
+                    middle = (noisy_image[i + 1][j] / 5 +
+                              noisy_image[i - 1][j] / 5 +
+                              noisy_image[i + 1][j + 1] / 5 + noisy_image[i - 1][j + 1] / 5 +
+                              noisy_image[i][j + 1] / 5)
+                elif i == height and j == 0:
+                    middle = (noisy_image[i][j + 1] / 8 + noisy_image[i][j + 2] / 8 +
+                              noisy_image[i - 1][j + 1] / 8 + noisy_image[i - 1][j + 2] / 8 +
+                              noisy_image[i - 1][j] / 8 + noisy_image[i - 2][j] / 8 +
+                              noisy_image[i - 2][j + 1] / 8 + noisy_image[i - 2][j + 2] / 8)
+                elif i == 0 and j == width:
+                    middle = (noisy_image[i][j - 1] / 8 + noisy_image[i][j - 2] / 8 +
+                              noisy_image[i + 1][j] / 8 + noisy_image[i + 1][j - 1] / 8 +
+                              noisy_image[i + 1][j - 2] / 8 + noisy_image[i + 2][j] / 8 +
+                              noisy_image[i + 2][j - 1] / 8 + noisy_image[i + 2][j - 2] / 8)
+                elif i == height:
+                    middle = (noisy_image[i][j - 1] / 5 +
+                              noisy_image[i][j + 1] / 5 +
+                              noisy_image[i - 1][j] / 5 + noisy_image[i - 1][j + 1] / 5 +
+                              noisy_image[i - 1][j - 1] / 5)
+                elif j == width:
+                    middle = (noisy_image[i - 1][j] / 5 +
+                              noisy_image[i + 1][j] / 5 +
+                              noisy_image[i][j - 1] / 5 + noisy_image[i + 1][j - 1] / 5 +
+                              noisy_image[i - 1][j - 1] / 5)
+                elif i == height and j == width:
+                    middle = (noisy_image[i - 1][j] / 8 + noisy_image[i - 2][j] / 8 +
+                              noisy_image[i][j - 1] / 8 + noisy_image[i - 1][j - 1] / 8 +
+                              noisy_image[i - 2][j - 1] / 8 + noisy_image[i][j - 2] / 8 +
+                              noisy_image[i - 1][j - 2] / 8 + noisy_image[i - 2][j - 2] / 8)
+                else:
+                    middle = (noisy_image[i + 1][j] / 8 + noisy_image[i - 1][j] / 8 +
+                              noisy_image[i][j + 1] / 8 + noisy_image[i][j - 1] / 8 +
+                              noisy_image[i + 1][j + 1] / 8 + noisy_image[i - 1][j - 1] / 8 +
+                              noisy_image[i + 1][j - 1] / 8 + noisy_image[i - 1][j + 1] / 8)
+
+                delta_q = noisy_image[i][j] - middle
+                if delta_q > self.threshold_slider.value():
+                    noisy_image[i][j] = middle
+                else:
+                    pass
+                #print(delta_q)
+        if self.closingCheckBox.isChecked():
+            noisy_image = cv2.morphologyEx(noisy_image, cv2.MORPH_CLOSE, (3, 3))
+        data = im.fromarray(noisy_image)
         data.save('restored.png')
         self.edit_image.setPixmap(QPixmap('restored.png'))
 
@@ -81,14 +146,21 @@ class Main(QDialog):
         self.edit_image.setStyleSheet(style)
 
         self.noise_slider.setMinimum(0)
-        self.noise_slider.setMaximum(255)
+        self.noise_slider.setMaximum(100)
+        self.noise_slider.setSingleStep(1)
         self.threshold_slider.setMinimum(0)
+        self.threshold_slider.setSingleStep(1)
         self.threshold_slider.setMaximum(255)
 
-        self.ly_internal.addWidget(self.noice_label, 0, 2, Qt.AlignmentFlag.AlignLeft)
-        self.ly_internal.addWidget(self.noise_slider, 1, 2, Qt.AlignmentFlag.AlignLeft)
-        self.ly_internal.addWidget(self.threshold_label, 0, 3, Qt.AlignmentFlag.AlignLeft)
-        self.ly_internal.addWidget(self.threshold_slider, 1, 3, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.noice_label, 0, 3, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.noise_slider, 1, 3, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.threshold_label, 0, 4, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.threshold_slider, 1, 4, Qt.AlignmentFlag.AlignLeft)
+
+        self.ly_internal.addWidget(QLabel('Gaussian Blur -> '), 0, 1, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
+        self.ly_internal.addWidget(QLabel('Closing -> '), 1, 1, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
+        self.ly_internal.addWidget(self.blurCheckBox, 0, 2, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.closingCheckBox, 1, 2, Qt.AlignmentFlag.AlignLeft)
 
         self.ly_internal.addWidget(self.startBtn, 0, 0, Qt.AlignmentFlag.AlignBottom)
         self.ly_internal.addWidget(self.restoreBtn, 1, 0, Qt.AlignmentFlag.AlignBottom)

@@ -7,6 +7,6 @@ from PyQt5.QtWidgets import QApplication
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = Main()
-    window.exec()
+    window.show()
 
-    app.exec()
+    sys.exit(app.exec())
