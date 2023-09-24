@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QSlider, QPushButton, QCheckBox
+from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QSlider, QPushButton, QCheckBox, QProgressBar
 from src.widgets.image_label import ImageLabel, QPixmap
 from PyQt5.QtCore import Qt
 from win32api import GetSystemMetrics
@@ -27,13 +27,14 @@ class Main(QDialog):
         self.blurCheckBox = QCheckBox()
         self.closingCheckBox = QCheckBox()
 
+        self.progress = QProgressBar()
+
         self.noise_slider = QSlider(Qt.Horizontal)
         self.threshold_slider = QSlider(Qt.Horizontal)
 
         self.noice_label = QLabel('Noice value: ')
-        self.noice_label.setStyleSheet(style)
+        self.progress_label = QLabel('Progress: ')
         self.threshold_label = QLabel('Threshold value: ')
-        self.threshold_label.setStyleSheet(style)
 
         self.startBtn = QPushButton('Start')
         self.startBtn.setToolTip('Starts adding noise to the image')
@@ -67,16 +68,22 @@ class Main(QDialog):
         self.edit_image.setPixmap(QPixmap())
 
     def restore_clicked(self):
+        self.progress.setValue(0)
         noisy_image = cv2.imread('image.png', cv2.IMREAD_GRAYSCALE)
-
+        self.progress.setValue(5)
         height, width = noisy_image.shape
 
         if self.blurCheckBox.isChecked():
             noisy_image = cv2.GaussianBlur(noisy_image, (1, 1), cv2.BORDER_DEFAULT)
+        self.progress.setValue(10)
+
+        additor = 80/(height*width)
 
         for i in range(height - 1):
             for j in range(width - 1):
                 middle = 0
+                if self.progress.value() < 90:
+                    self.progress.setValue(self.progress.value() + 1)
                 if i == 0 and j == 0:
                     middle = (noisy_image[i][j + 1] / 8 + noisy_image[i][j + 2] / 8 +
                               noisy_image[i + 1][j] / 8 + noisy_image[i + 1][j + 1] / 8 +
@@ -131,9 +138,11 @@ class Main(QDialog):
                 #print(delta_q)
         if self.closingCheckBox.isChecked():
             noisy_image = cv2.morphologyEx(noisy_image, cv2.MORPH_CLOSE, (3, 3))
+        self.progress.setValue(90)
         data = im.fromarray(noisy_image)
         data.save('restored.png')
         self.edit_image.setPixmap(QPixmap('restored.png'))
+        self.progress.setValue(100)
 
     def slider_noice_value_changed(self):
         self.noice_label.setText('Noice value: ' + str(self.noise_slider.value()))
@@ -156,6 +165,10 @@ class Main(QDialog):
         self.ly_internal.addWidget(self.noise_slider, 1, 3, Qt.AlignmentFlag.AlignLeft)
         self.ly_internal.addWidget(self.threshold_label, 0, 4, Qt.AlignmentFlag.AlignLeft)
         self.ly_internal.addWidget(self.threshold_slider, 1, 4, Qt.AlignmentFlag.AlignLeft)
+
+        self.ly_internal.addWidget(self.progress_label, 2, 3, Qt.AlignLeft)
+        self.ly_internal.addWidget(self.progress, 2, 4, Qt.AlignLeft)
+
 
         self.ly_internal.addWidget(QLabel('Gaussian Blur -> '), 0, 1, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
         self.ly_internal.addWidget(QLabel('Closing -> '), 1, 1, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
@@ -185,6 +198,10 @@ class Main(QDialog):
         self.startBtn.clicked.connect(self.start_clicked)
         self.restartBtn.clicked.connect(self.restart_clicked)
         self.restoreBtn.clicked.connect(self.restore_clicked)
+        self.progress.valueChanged.connect(self.update_bar)
+
+    def update_bar(self):
+        self.progress_label.setText('Progress: ' + str(self.progress.value()) + '%')
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasImage:
