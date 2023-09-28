@@ -1,19 +1,21 @@
-from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QSlider, QPushButton, QCheckBox, QProgressBar
+from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QSlider, QPushButton,QCheckBox, QProgressBar, QDockWidget, QVBoxLayout, QHBoxLayout
 from src.widgets.image_label import ImageLabel, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon
 from win32api import GetSystemMetrics
 import cv2
 import numpy as np
 from PIL import Image as im
 
-style = 'border: 1px solid #010203'
+style = 'border: 1px solid #010203;' \
+        'border-radius: 10px;'
 
 
 class Main(QDialog):
     def __init__(self):
         super().__init__()
         self.setAcceptDrops(True)
-        self.setWindowTitle('Lab1')
+        self.setWindowTitle('Deleting noise from image')
 
         self.ly = QGridLayout()
 
@@ -28,6 +30,9 @@ class Main(QDialog):
         self.closingCheckBox = QCheckBox()
 
         self.progress = QProgressBar()
+        self.progress.setStyleSheet("margin: 0.5px;"
+                                    "text-align: center;"
+                                    "border-radius: 5px;")
 
         self.noise_slider = QSlider(Qt.Horizontal)
         self.threshold_slider = QSlider(Qt.Horizontal)
@@ -36,13 +41,9 @@ class Main(QDialog):
         self.progress_label = QLabel('Progress: ')
         self.threshold_label = QLabel('Threshold value: ')
 
-        self.startBtn = QPushButton('Start')
-        self.startBtn.setToolTip('Starts adding noise to the image')
-        self.restoreBtn = QPushButton('Restore')
-        self.restoreBtn.setToolTip('Restores image')
-        self.restartBtn = QPushButton('Restart')
-        self.restartBtn.setToolTip('Sets everything to zero and deleted images')
-
+        self.startBtn = QPushButton()
+        self.restoreBtn = QPushButton()
+        self.restartBtn = QPushButton()
         self.ly_internal = QGridLayout()
 
         self.setup()
@@ -77,11 +78,8 @@ class Main(QDialog):
             noisy_image = cv2.GaussianBlur(noisy_image, (1, 1), cv2.BORDER_DEFAULT)
         self.progress.setValue(10)
 
-        additor = 80/(height*width)
-
         for i in range(height - 1):
             for j in range(width - 1):
-                middle = 0
                 if self.progress.value() < 90:
                     self.progress.setValue(self.progress.value() + 1)
                 if i == 0 and j == 0:
@@ -150,9 +148,21 @@ class Main(QDialog):
     def slider_threshold_value_changed(self):
         self.threshold_label.setText('Threshold value: ' + str(self.threshold_slider.value()))
 
-    def setup(self):
+    def settings(self):
         self.noise_image.setStyleSheet(style)
         self.edit_image.setStyleSheet(style)
+
+        self.startBtn.setIcon(QIcon('./static/start.png'))
+        self.startBtn.setIconSize(QSize(80, 50))
+        self.startBtn.setToolTip('Starts adding noise to the image')
+
+        self.restoreBtn.setIcon(QIcon('./static/restore.png'))
+        self.restoreBtn.setIconSize(QSize(80, 50))
+        self.restoreBtn.setToolTip('Restores image')
+
+        self.restartBtn.setIcon(QIcon('./static/restart.png'))
+        self.restartBtn.setIconSize(QSize(80, 50))
+        self.restartBtn.setToolTip('Sets everything to zero and deletes images')
 
         self.noise_slider.setMinimum(0)
         self.noise_slider.setMaximum(100)
@@ -161,36 +171,6 @@ class Main(QDialog):
         self.threshold_slider.setSingleStep(1)
         self.threshold_slider.setMaximum(255)
 
-        self.ly_internal.addWidget(self.noice_label, 0, 3, Qt.AlignmentFlag.AlignLeft)
-        self.ly_internal.addWidget(self.noise_slider, 1, 3, Qt.AlignmentFlag.AlignLeft)
-        self.ly_internal.addWidget(self.threshold_label, 0, 4, Qt.AlignmentFlag.AlignLeft)
-        self.ly_internal.addWidget(self.threshold_slider, 1, 4, Qt.AlignmentFlag.AlignLeft)
-
-        self.ly_internal.addWidget(self.progress_label, 2, 3, Qt.AlignLeft)
-        self.ly_internal.addWidget(self.progress, 2, 4, Qt.AlignLeft)
-
-
-        self.ly_internal.addWidget(QLabel('Gaussian Blur -> '), 0, 1, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
-        self.ly_internal.addWidget(QLabel('Closing -> '), 1, 1, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
-        self.ly_internal.addWidget(self.blurCheckBox, 0, 2, Qt.AlignmentFlag.AlignLeft)
-        self.ly_internal.addWidget(self.closingCheckBox, 1, 2, Qt.AlignmentFlag.AlignLeft)
-
-        self.ly_internal.addWidget(self.startBtn, 0, 0, Qt.AlignmentFlag.AlignBottom)
-        self.ly_internal.addWidget(self.restoreBtn, 1, 0, Qt.AlignmentFlag.AlignBottom)
-        self.ly_internal.addWidget(self.restartBtn, 2, 0, Qt.AlignmentFlag.AlignBottom)
-
-        self.ly.addLayout(self.ly_internal, 0, 0, 3, 3, Qt.AlignmentFlag.AlignTop)
-
-        self.ly.addWidget(QLabel('Started image'), 1, 0, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
-        self.ly.addWidget(QLabel('Noised image'), 1, 1, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
-        self.ly.addWidget(QLabel('Edited image'), 1, 2, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
-
-        self.ly.addWidget(self.start_image, 2, 0)
-        self.ly.addWidget(self.noise_image, 2, 1)
-        self.ly.addWidget(self.edit_image, 2, 2)
-        self.ly.setSpacing(5)
-
-        self.setLayout(self.ly)
         self.setMinimumSize(GetSystemMetrics(0) / 3, GetSystemMetrics(1) / 3)
 
         self.noise_slider.valueChanged.connect(self.slider_noice_value_changed)
@@ -199,6 +179,43 @@ class Main(QDialog):
         self.restartBtn.clicked.connect(self.restart_clicked)
         self.restoreBtn.clicked.connect(self.restore_clicked)
         self.progress.valueChanged.connect(self.update_bar)
+
+    def setup(self):
+        self.ly_internal.addWidget(self.noice_label, 0, 0, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.noise_slider, 0, 1, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.threshold_label, 1, 0, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.threshold_slider, 1, 1, Qt.AlignmentFlag.AlignLeft)
+
+        self.ly_internal.addWidget(self.progress_label, 4, 0, Qt.AlignLeft)
+        self.ly_internal.addWidget(self.progress, 4, 1, Qt.AlignLeft)
+
+        self.ly_internal.addWidget(QLabel('Gaussian Blur -> '), 2, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
+        self.ly_internal.addWidget(QLabel('Closing -> '), 3, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
+        self.ly_internal.addWidget(self.blurCheckBox, 2, 1, Qt.AlignmentFlag.AlignLeft)
+        self.ly_internal.addWidget(self.closingCheckBox, 3, 1, Qt.AlignmentFlag.AlignLeft)
+
+        self.ly.addLayout(self.ly_internal, 0, 1, 2, 2, Qt.AlignmentFlag.AlignTop)
+
+        vly = QVBoxLayout()
+        vly.addWidget(self.startBtn)
+        vly.addWidget(self.restoreBtn)
+        vly.addWidget(self.restartBtn)
+        self.ly.addLayout(vly, 0, 0, 2, 1, Qt.AlignmentFlag.AlignLeft)
+
+        self.ly.addWidget(QLabel('Started image'), 1, 0, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
+        self.ly.addWidget(QLabel('Noised image'), 1, 1, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
+        self.ly.addWidget(QLabel('Edited image'), 1, 2, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
+
+        im_ly = QHBoxLayout()
+        im_ly.addWidget(self.start_image)
+        im_ly.addWidget(self.noise_image)
+        im_ly.addWidget(self.edit_image)
+
+        self.ly.addLayout(im_ly, 2, 0, 1, 3)
+
+        self.ly.setSpacing(5)
+        self.settings()
+        self.setLayout(self.ly)
 
     def update_bar(self):
         self.progress_label.setText('Progress: ' + str(self.progress.value()) + '%')

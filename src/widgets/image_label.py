@@ -11,7 +11,8 @@ class ImageLabel(QLabel):
         self.setText('\n\n Drop Image Here \n\n')
         self.setStyleSheet('''
             QLabel{
-                border: 1px solid #010203
+                border: 1px solid #010203;
+                border-radius: 10px;
             }
         ''')
         self.imagePath = ''
