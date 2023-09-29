@@ -5,4 +5,4 @@ numpy
 Pillow
 datetime
 qtmodern
-cairo
+pyqtspinner

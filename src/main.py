@@ -13,5 +13,6 @@ if __name__ == "__main__":
     qtmodern.styles.dark(app)
     mw = qtmodern.windows.ModernWindow(window)
     mw.show()
+    #window.show()
 
     sys.exit(app.exec())

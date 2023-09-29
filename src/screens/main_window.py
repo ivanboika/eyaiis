@@ -1,14 +1,16 @@
-from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QSlider, QPushButton,QCheckBox, QProgressBar, QDockWidget, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QSlider, QPushButton,QCheckBox, QProgressBar, QVBoxLayout, QHBoxLayout
 from src.widgets.image_label import ImageLabel, QPixmap
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QRunnable, QThreadPool, QThread
 from PyQt5.QtGui import QIcon
 from win32api import GetSystemMetrics
 import cv2
 import numpy as np
 from PIL import Image as im
 
+
 style = 'border: 1px solid #010203;' \
         'border-radius: 10px;'
+label_style = "font: bold 14px"
 
 
 class Main(QDialog):
@@ -38,8 +40,11 @@ class Main(QDialog):
         self.threshold_slider = QSlider(Qt.Horizontal)
 
         self.noice_label = QLabel('Noice value: ')
+        self.noice_label.setStyleSheet(label_style)
         self.progress_label = QLabel('Progress: ')
+        self.progress_label.setStyleSheet(label_style)
         self.threshold_label = QLabel('Threshold value: ')
+        self.threshold_label.setStyleSheet(label_style)
 
         self.startBtn = QPushButton()
         self.restoreBtn = QPushButton()
@@ -69,6 +74,7 @@ class Main(QDialog):
         self.edit_image.setPixmap(QPixmap())
 
     def restore_clicked(self):
+        self.edit_image.clear()
         self.progress.setValue(0)
         noisy_image = cv2.imread('image.png', cv2.IMREAD_GRAYSCALE)
         self.progress.setValue(5)
@@ -133,7 +139,6 @@ class Main(QDialog):
                     noisy_image[i][j] = middle
                 else:
                     pass
-                #print(delta_q)
         if self.closingCheckBox.isChecked():
             noisy_image = cv2.morphologyEx(noisy_image, cv2.MORPH_CLOSE, (3, 3))
         self.progress.setValue(90)
@@ -171,7 +176,7 @@ class Main(QDialog):
         self.threshold_slider.setSingleStep(1)
         self.threshold_slider.setMaximum(255)
 
-        self.setMinimumSize(GetSystemMetrics(0) / 3, GetSystemMetrics(1) / 3)
+        self.setMinimumSize(GetSystemMetrics(0) / 3, 200 + GetSystemMetrics(1) / 3)
 
         self.noise_slider.valueChanged.connect(self.slider_noice_value_changed)
         self.threshold_slider.valueChanged.connect(self.slider_threshold_value_changed)
@@ -189,8 +194,14 @@ class Main(QDialog):
         self.ly_internal.addWidget(self.progress_label, 4, 0, Qt.AlignLeft)
         self.ly_internal.addWidget(self.progress, 4, 1, Qt.AlignLeft)
 
-        self.ly_internal.addWidget(QLabel('Gaussian Blur -> '), 2, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
-        self.ly_internal.addWidget(QLabel('Closing -> '), 3, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
+        label4 = QLabel('Gaussian Blur -> ')
+        label4.setStyleSheet(label_style)
+        self.ly_internal.addWidget(label4, 2, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
+
+        label5 = QLabel('Closing -> ')
+        label5.setStyleSheet(label_style)
+        self.ly_internal.addWidget(label5, 3, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignCenter)
+
         self.ly_internal.addWidget(self.blurCheckBox, 2, 1, Qt.AlignmentFlag.AlignLeft)
         self.ly_internal.addWidget(self.closingCheckBox, 3, 1, Qt.AlignmentFlag.AlignLeft)
 
@@ -200,11 +211,18 @@ class Main(QDialog):
         vly.addWidget(self.startBtn)
         vly.addWidget(self.restoreBtn)
         vly.addWidget(self.restartBtn)
-        self.ly.addLayout(vly, 0, 0, 2, 1, Qt.AlignmentFlag.AlignLeft)
+        self.ly.addLayout(vly, 0, 0, 2, 1, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
-        self.ly.addWidget(QLabel('Started image'), 1, 0, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
-        self.ly.addWidget(QLabel('Noised image'), 1, 1, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
-        self.ly.addWidget(QLabel('Edited image'), 1, 2, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
+        label1 = QLabel('Start image')
+        label1.setStyleSheet(label_style)
+        label2 = QLabel('Noised image')
+        label2.setStyleSheet(label_style)
+        label3 = QLabel('Edited image')
+        label3.setStyleSheet(label_style)
+
+        self.ly.addWidget(label1, 1, 0, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
+        self.ly.addWidget(label2, 1, 1, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
+        self.ly.addWidget(label3, 1, 2, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter)
 
         im_ly = QHBoxLayout()
         im_ly.addWidget(self.start_image)
@@ -245,3 +263,4 @@ class Main(QDialog):
     def set_image(self, file_path):
         self.start_image.setPixmap(file_path)
         self.adjustSize()
+        self.layout().setSizeConstraint(2)
