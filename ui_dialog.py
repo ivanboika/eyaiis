@@ -23,6 +23,10 @@ class Ui_Dialog(object):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
         Dialog.resize(435, 326)
+        Dialog.setStyleSheet(u"background-color: rgb(252, 225, 255);\n"
+"background-color: rgb(212, 234, 255);\n"
+"border-color: rgb(0, 0, 0);\n"
+"selection-color: rgb(199, 255, 208);")
         self.formLayoutWidget = QWidget(Dialog)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
         self.formLayoutWidget.setGeometry(QRect(110, 160, 224, 60))
@@ -36,11 +40,13 @@ class Ui_Dialog(object):
 
         self.pushButton = QPushButton(self.formLayoutWidget)
         self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setStyleSheet(u"")
 
         self.formLayout.setWidget(1, QFormLayout.LabelRole, self.pushButton)
 
         self.pushButton_2 = QPushButton(self.formLayoutWidget)
         self.pushButton_2.setObjectName(u"pushButton_2")
+        self.pushButton_2.setCheckable(False)
 
         self.formLayout.setWidget(1, QFormLayout.FieldRole, self.pushButton_2)
 

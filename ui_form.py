@@ -26,7 +26,7 @@ class Ui_Widget(object):
         Widget.setStyleSheet(u"background-color: rgb(234, 244, 255);")
         self.gridLayoutWidget = QWidget(Widget)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(90, 70, 751, 451))
+        self.gridLayoutWidget.setGeometry(QRect(110, 30, 751, 533))
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setHorizontalSpacing(6)
@@ -34,60 +34,19 @@ class Ui_Widget(object):
         self.gridLayout.setContentsMargins(0, 5, 5, 5)
         self.pushButton = QPushButton(self.gridLayoutWidget)
         self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setStyleSheet(u"background-color: rgb(255, 238, 253);")
 
         self.gridLayout.addWidget(self.pushButton, 4, 4, 1, 1)
 
-        self.loadBtn = QPushButton(self.gridLayoutWidget)
-        self.loadBtn.setObjectName(u"loadBtn")
+        self.pushButton_4 = QPushButton(self.gridLayoutWidget)
+        self.pushButton_4.setObjectName(u"pushButton_4")
+        self.pushButton_4.setStyleSheet(u"background-color: rgb(255, 238, 253);")
 
-        self.gridLayout.addWidget(self.loadBtn, 5, 4, 1, 1)
-
-        self.saveBtn = QPushButton(self.gridLayoutWidget)
-        self.saveBtn.setObjectName(u"saveBtn")
-
-        self.gridLayout.addWidget(self.saveBtn, 6, 4, 1, 1)
-
-        self.textEdit = QTextEdit(self.gridLayoutWidget)
-        self.textEdit.setObjectName(u"textEdit")
-        self.textEdit.setReadOnly(False)
-
-        self.gridLayout.addWidget(self.textEdit, 1, 2, 8, 2)
-
-        self.nextBtn = QPushButton(self.gridLayoutWidget)
-        self.nextBtn.setObjectName(u"nextBtn")
-
-        self.gridLayout.addWidget(self.nextBtn, 9, 3, 1, 1)
-
-        self.lineEdit = QLineEdit(self.gridLayoutWidget)
-        self.lineEdit.setObjectName(u"lineEdit")
-        self.lineEdit.setAlignment(Qt.AlignCenter)
-        self.lineEdit.setReadOnly(False)
-
-        self.gridLayout.addWidget(self.lineEdit, 0, 2, 1, 2)
-
-        self.submitBtn = QPushButton(self.gridLayoutWidget)
-        self.submitBtn.setObjectName(u"submitBtn")
-
-        self.gridLayout.addWidget(self.submitBtn, 2, 4, 1, 1)
-
-        self.cancelBtn = QPushButton(self.gridLayoutWidget)
-        self.cancelBtn.setObjectName(u"cancelBtn")
-
-        self.gridLayout.addWidget(self.cancelBtn, 3, 4, 1, 1)
-
-        self.addBtn = QPushButton(self.gridLayoutWidget)
-        self.addBtn.setObjectName(u"addBtn")
-
-        self.gridLayout.addWidget(self.addBtn, 1, 4, 1, 1)
-
-        self.label_2 = QLabel(self.gridLayoutWidget)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_4, 7, 4, 1, 1)
 
         self.prevBtn = QPushButton(self.gridLayoutWidget)
         self.prevBtn.setObjectName(u"prevBtn")
+        self.prevBtn.setStyleSheet(u"background-color: rgb(255, 238, 253);")
 
         self.gridLayout.addWidget(self.prevBtn, 9, 2, 1, 1)
 
@@ -97,10 +56,61 @@ class Ui_Widget(object):
 
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
 
-        self.pushButton_4 = QPushButton(self.gridLayoutWidget)
-        self.pushButton_4.setObjectName(u"pushButton_4")
+        self.loadBtn = QPushButton(self.gridLayoutWidget)
+        self.loadBtn.setObjectName(u"loadBtn")
+        self.loadBtn.setStyleSheet(u"background-color: rgb(255, 238, 253);")
 
-        self.gridLayout.addWidget(self.pushButton_4, 7, 4, 1, 1)
+        self.gridLayout.addWidget(self.loadBtn, 5, 4, 1, 1)
+
+        self.textEdit = QTextEdit(self.gridLayoutWidget)
+        self.textEdit.setObjectName(u"textEdit")
+        self.textEdit.setReadOnly(False)
+
+        self.gridLayout.addWidget(self.textEdit, 1, 2, 8, 2)
+
+        self.cancelBtn = QPushButton(self.gridLayoutWidget)
+        self.cancelBtn.setObjectName(u"cancelBtn")
+        self.cancelBtn.setStyleSheet(u"background-color: rgb(255, 238, 253);")
+
+        self.gridLayout.addWidget(self.cancelBtn, 3, 4, 1, 1)
+
+        self.addBtn = QPushButton(self.gridLayoutWidget)
+        self.addBtn.setObjectName(u"addBtn")
+        self.addBtn.setStyleSheet(u"background-color: rgb(255, 238, 253);")
+
+        self.gridLayout.addWidget(self.addBtn, 1, 4, 1, 1)
+
+        self.submitBtn = QPushButton(self.gridLayoutWidget)
+        self.submitBtn.setObjectName(u"submitBtn")
+        self.submitBtn.setStyleSheet(u"background-color: rgb(255, 238, 253);")
+
+        self.gridLayout.addWidget(self.submitBtn, 2, 4, 1, 1)
+
+        self.saveBtn = QPushButton(self.gridLayoutWidget)
+        self.saveBtn.setObjectName(u"saveBtn")
+        self.saveBtn.setStyleSheet(u"background-color: rgb(255, 238, 253);\n"
+"background-color: rgb(255, 238, 253);")
+
+        self.gridLayout.addWidget(self.saveBtn, 6, 4, 1, 1)
+
+        self.lineEdit = QLineEdit(self.gridLayoutWidget)
+        self.lineEdit.setObjectName(u"lineEdit")
+        self.lineEdit.setAlignment(Qt.AlignCenter)
+        self.lineEdit.setReadOnly(False)
+
+        self.gridLayout.addWidget(self.lineEdit, 0, 2, 1, 2)
+
+        self.nextBtn = QPushButton(self.gridLayoutWidget)
+        self.nextBtn.setObjectName(u"nextBtn")
+        self.nextBtn.setStyleSheet(u"background-color: rgb(255, 238, 253);")
+
+        self.gridLayout.addWidget(self.nextBtn, 9, 3, 1, 1)
+
+        self.label_2 = QLabel(self.gridLayoutWidget)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
 
 
         self.retranslateUi(Widget)
@@ -111,15 +121,15 @@ class Ui_Widget(object):
     def retranslateUi(self, Widget):
         Widget.setWindowTitle(QCoreApplication.translate("Widget", u"Simple Address Book", None))
         self.pushButton.setText(QCoreApplication.translate("Widget", u"Search", None))
-        self.loadBtn.setText(QCoreApplication.translate("Widget", u"Load", None))
-        self.saveBtn.setText(QCoreApplication.translate("Widget", u"Save", None))
-        self.nextBtn.setText(QCoreApplication.translate("Widget", u"Next", None))
-        self.submitBtn.setText(QCoreApplication.translate("Widget", u"Submit", None))
-        self.cancelBtn.setText(QCoreApplication.translate("Widget", u"Cancel", None))
-        self.addBtn.setText(QCoreApplication.translate("Widget", u"Add", None))
-        self.label_2.setText(QCoreApplication.translate("Widget", u"Address:", None))
+        self.pushButton_4.setText(QCoreApplication.translate("Widget", u"Export", None))
         self.prevBtn.setText(QCoreApplication.translate("Widget", u"Previous", None))
         self.label.setText(QCoreApplication.translate("Widget", u"Name:", None))
-        self.pushButton_4.setText(QCoreApplication.translate("Widget", u"Export", None))
+        self.loadBtn.setText(QCoreApplication.translate("Widget", u"Load", None))
+        self.cancelBtn.setText(QCoreApplication.translate("Widget", u"Cancel", None))
+        self.addBtn.setText(QCoreApplication.translate("Widget", u"Add", None))
+        self.submitBtn.setText(QCoreApplication.translate("Widget", u"Submit", None))
+        self.saveBtn.setText(QCoreApplication.translate("Widget", u"Save", None))
+        self.nextBtn.setText(QCoreApplication.translate("Widget", u"Next", None))
+        self.label_2.setText(QCoreApplication.translate("Widget", u"Address:", None))
     # retranslateUi
 

@@ -13,6 +13,12 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(252, 225, 255);
+background-color: rgb(212, 234, 255);
+border-color: rgb(0, 0, 0);
+selection-color: rgb(199, 255, 208);</string>
+  </property>
   <widget class="QWidget" name="formLayoutWidget">
    <property name="geometry">
     <rect>
@@ -34,6 +40,9 @@
     </item>
     <item row="1" column="0">
      <widget class="QPushButton" name="pushButton">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="text">
        <string>Search</string>
       </property>
@@ -43,6 +52,9 @@
      <widget class="QPushButton" name="pushButton_2">
       <property name="text">
        <string>Cancel</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
