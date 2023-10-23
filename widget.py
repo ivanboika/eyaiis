@@ -1,16 +1,16 @@
 # This Python file uses the following encoding: utf-8
 import sys
-import json
-
-from PySide6.QtWidgets import QApplication, QWidget, QMessageBox, QFileDialog
-from AddressBook import AddressBook
-
-# Important:
-# You need to run the following command to generate the ui_form.py file
-#     pyside6-uic form.ui -o ui_form.py, or
-#     pyside2-uic form.ui -o ui_form.py
+from connection import *
+from PySide6.QtWidgets import QApplication, QWidget
 from ui_form import Ui_Widget
 from dialogWidget import MyDialog
+from sort import SortWidget
+from operator import attrgetter
+
+
+def sort_by_field(obj_list, field_name, reverse=False):
+    key_function = attrgetter(field_name)
+    return sorted(obj_list, key=key_function, reverse=reverse)
 
 
 class MyWidget(QWidget):
@@ -19,28 +19,47 @@ class MyWidget(QWidget):
         self.ui = Ui_Widget()
         self.ui.setupUi(self)
         self.setup()
-        self.ui.lineEdit.setReadOnly(True)
-        self.ui.textEdit.setReadOnly(True)
-        self.setLayout(self.ui.gridLayout)
 
-        self.ui.submitBtn.setText('Edit')
-        self.ui.cancelBtn.setText('Remove')
+        self.setLayout(self.ui.gridLayout)
+        self.controller = Controller()
 
         self.addresses = []
         self.page = 0
         self.pages = 0
-        self.path = 'address.json'
-        with open(self.path, "r") as read_file:
-            data = json.load(read_file)
-            for item in data['addresses']:
-                self.addresses.append(AddressBook(name=item['name'], address=item['address']))
+        self.objects = []
+        self.status = ""
 
-        self.pages = len(self.addresses)
-        self.moveItem()
+        self.reload()
+
+        self.set_global_status(False)
+
+    def update_list(self):
+        self.pages = len(self.objects)
+        if self.pages != 0:
+            self.page = 0
+            self.moveItem()
+
+    def reload(self):
+        self.objects = self.controller.get_all_objects()
+        self.pages = len(self.objects)
+        if self.pages != 0:
+            self.page = 0
+            self.moveItem()
+
+    def set_global_status(self, status: bool):
+        self.ui.lineEdit.setEnabled(status)
+        self.ui.address.setEnabled(status)
+        self.ui.age.setEnabled(status)
+        self.ui.time.setEnabled(status)
+        self.ui.checkBox.setEnabled(status)
 
     def moveItem(self):
-        self.ui.lineEdit.setText(self.addresses[self.page].name)
-        self.ui.textEdit.setText(self.addresses[self.page].address)
+        current = self.objects[self.page]
+        self.ui.lineEdit.setText(current.name)
+        self.ui.address.setText(current.address)
+        self.ui.age.setText(str(current.age))
+        self.ui.time.setText(str(current.date))
+        self.ui.checkBox.setChecked(current.is_vip)
 
     def setup(self):
         self.ui.addBtn.clicked.connect(self.clickedAdd)
@@ -49,93 +68,59 @@ class MyWidget(QWidget):
         self.ui.prevBtn.clicked.connect(self.clickedPrev)
         self.ui.cancelBtn.clicked.connect(self.clickedCancel)
         self.ui.pushButton.clicked.connect(self.searchClicked)
-        self.ui.saveBtn.clicked.connect(self.saveClicked)
-        self.ui.loadBtn.clicked.connect(self.loadClicked)
-        self.ui.pushButton_4.clicked.connect(self.exportClicked)
+        self.ui.delete_2.clicked.connect(self.deleteClicked)
+        self.ui.editBtn.clicked.connect(self.editClicked)
+        self.ui.export_2.clicked.connect(self.export)
+        self.ui.sortBtn.clicked.connect(self.sort)
 
-    def exportClicked(self):
-        filename, _ = QFileDialog.getSaveFileName(self, "Save file", "addressBook.txt", "Data Files (*.txt)")
-        if filename:
-            with open(filename, "w") as file:
-                for item in self.addresses:
-                    file.write(item.__export__())
+    def sort(self):
+        sortWidget = SortWidget()
+        how_sort = sortWidget.exec()
+        self.objects = sort_by_field(self.objects, how_sort)
+        self.update_list()
 
-    def loadClicked(self):
-        book, _ = QFileDialog.getOpenFileName(self, "Open Address Book", "", "Data Files (*.json)")
-        if book != '':
-            self.path = book
-            self.addresses = []
-            with open(book, "r") as read_file:
-                data = json.load(read_file)
+    def export(self):
+        with open("save.txt", "w") as file:
+            for item in self.objects:
+                file.write(item.__str__() + '\n')
 
-                for item in data['addresses']:
-                    self.addresses.append(AddressBook(name=item['name'], address=item['address']))
-            self.pages = len(self.addresses)
-            self.page = 0
-            self.moveItem()
+    def editClicked(self):
+        self.status = "edit"
+        self.set_global_status(True)
 
-    def saveClicked(self):
-        dict_ = {"addresses": []}
-        for item in self.addresses:
-            dict_["addresses"].append(item.__dict__())
-
-        queota = QMessageBox.question(self, 'Save', 'Save to the new file?', QMessageBox.Ok | QMessageBox.No)
-
-        if queota == QMessageBox.No:
-            with open(self.path, "w") as write_file:
-                json.dump(dict_, write_file)
-        else:
-            filename, _ = QFileDialog.getSaveFileName(self, "Save file", "", "Data Files (*.json)")
-            if filename:
-                with open(filename, "w") as file:
-                    json.dump(dict_, file)
+    def deleteClicked(self):
+        self.controller.delete_object(self.objects[self.page])
+        self.reload()
 
     def clickedAdd(self):
-        if self.ui.addBtn.text() == 'Add':
-            self.ui.lineEdit.setText('')
-            self.ui.textEdit.setText('')
-            self.ui.lineEdit.setReadOnly(False)
-            self.ui.textEdit.setReadOnly(False)
-            self.ui.submitBtn.setText('Submit')
-            self.ui.cancelBtn.setText('Cancel')
-        else:  # update
-            newName = self.ui.lineEdit.text()
-            newAddress = self.ui.textEdit.toPlainText()
-            self.addresses.remove(self.addresses[self.page])
-            self.addresses.append(AddressBook(name=newName, address=newAddress))
-            self.ui.addBtn.setText('Add')
-            self.ui.lineEdit.setReadOnly(True)
-            self.ui.textEdit.setReadOnly(True)
+        self.status = "add"
+        self.set_global_status(True)
+
+        self.ui.lineEdit.setText("")
+        self.ui.address.setText("")
+        self.ui.age.setText("")
+        self.ui.time.setText("")
+        self.ui.checkBox.setChecked(False)
 
     def clickedSubmit(self):
-        if self.ui.submitBtn.text() == 'Submit':
-            name = self.ui.lineEdit.text()
-            address = self.ui.textEdit.toPlainText()
-            exists = False
-            for item in self.addresses:
-                if name == item.name:
-                    warning = QMessageBox()
-                    warning.setIcon(QMessageBox.Warning)
-                    warning.setWindowTitle('Warning!')
-                    warning.setText('This name already exists!')
-                    warning.exec()
-                    exists = True
-            if not exists:
-                self.addresses.append(AddressBook(name=name, address=address))
-                self.pages = len(self.addresses)
-                self.ui.submitBtn.setText('Edit')
-                self.ui.cancelBtn.setText('Remove')
-        elif self.ui.submitBtn.text() == 'Edit':
-            self.ui.addBtn.setText('Update')
-            self.ui.submitBtn.setText('Cancel')
-            self.ui.lineEdit.setReadOnly(False)
-            self.ui.textEdit.setReadOnly(False)
-        else:  # Cancel
-            self.ui.addBtn.setText('Add')
-            self.ui.submitBtn.setText('Edit')
-            self.ui.lineEdit.setReadOnly(True)
-            self.ui.textEdit.setReadOnly(True)
-            self.moveItem()
+        if self.status == "add":
+            self.controller.create_object(name=self.ui.lineEdit.text(), is_vip=self.ui.checkBox.isChecked(),
+                                          address=self.ui.address.text(), time=self.ui.time.text(), age=self.ui.age.text())
+
+        elif self.status == "edit":
+            self.objects[self.page].name = self.ui.lineEdit.text()
+            self.objects[self.page].is_vip = self.ui.checkBox.isChecked()
+            self.objects[self.page].address = self.ui.address.text()
+            self.objects[self.page].age = self.ui.age.text()
+            self.objects[self.page].time = self.ui.time.text()
+
+            self.controller.edit_object(self.objects[self.page])
+        elif self.status == "None":
+            pass
+
+        self.reload()
+        self.set_global_status(False)
+        self.status = "None"
 
     def clickedNext(self):
         self.page += 1
@@ -152,34 +137,12 @@ class MyWidget(QWidget):
             self.page += 1
 
     def clickedCancel(self):
-        if self.ui.cancelBtn.text() == 'Cancel':
-            self.moveItem()
-            self.ui.lineEdit.setReadOnly(True)
-            self.ui.textEdit.setReadOnly(True)
-            self.ui.submitBtn.setText('Edit')
-            self.ui.cancelBtn.setText('Remove')
-        else:
-            name = self.ui.lineEdit.text()
-            for item in self.addresses:
-                if item.name == name:
-                    confirmMessage = QMessageBox()
-                    confirmMessage.setIcon(QMessageBox.Warning)
-                    confirmMessage.setWindowTitle('Confirm')
-                    confirmMessage.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok)
-                    confirmMessage.setText(f'Are you sure that you want to delete \'{name}\'?')
-                    if confirmMessage.exec() == QMessageBox.Ok:
-                        successMessage = QMessageBox()
-                        successMessage.setWindowTitle('Hooray')
-                        successMessage.setText(f'Successfully deleted \'{name}\'!')
-                        successMessage.setStandardButtons(QMessageBox.Ok)
-                        successMessage.exec()
-                        self.addresses.remove(item)
-            self.page = 0
-            self.pages = len(self.addresses)
-            self.moveItem()
+        self.reload()
+        self.set_global_status(False)
+        self.status = "None"
 
     def searchClicked(self):
-        searchDialog = MyDialog(self.addresses, self.page)
+        searchDialog = MyDialog(self.objects, self.page)
         self.page = searchDialog.exec()
         self.moveItem()
 

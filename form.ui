@@ -20,12 +20,15 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>30</y>
-     <width>751</width>
-     <height>533</height>
+     <y>40</y>
+     <width>801</width>
+     <height>411</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0" columnstretch="0,0,0,0,0">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0" columnstretch="0,0,0,0,0">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
     <property name="topMargin">
      <number>5</number>
     </property>
@@ -41,7 +44,30 @@
     <property name="verticalSpacing">
      <number>5</number>
     </property>
-    <item row="4" column="4">
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="layoutDirection">
+       <enum>Qt::RightToLeft</enum>
+      </property>
+      <property name="text">
+       <string>VIP</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Time created at:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="4">
      <widget class="QPushButton" name="pushButton">
       <property name="styleSheet">
        <string notr="true">background-color: rgb(255, 238, 253);</string>
@@ -51,25 +77,31 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="4">
-     <widget class="QPushButton" name="pushButton_4">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 238, 253);</string>
-      </property>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="address"/>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Export</string>
+       <string>Address:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="9" column="2">
-     <widget class="QPushButton" name="prevBtn">
+    <item row="1" column="4">
+     <widget class="QPushButton" name="submitBtn">
       <property name="styleSheet">
        <string notr="true">background-color: rgb(255, 238, 253);</string>
       </property>
       <property name="text">
-       <string>Previous</string>
+       <string>Submit</string>
       </property>
      </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="time"/>
     </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label">
@@ -81,24 +113,20 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="4">
-     <widget class="QPushButton" name="loadBtn">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 238, 253);</string>
-      </property>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="age"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>Load</string>
+       <string>Age:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="1" column="2" rowspan="8" colspan="2">
-     <widget class="QTextEdit" name="textEdit">
-      <property name="readOnly">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="4">
+    <item row="2" column="4">
      <widget class="QPushButton" name="cancelBtn">
       <property name="styleSheet">
        <string notr="true">background-color: rgb(255, 238, 253);</string>
@@ -108,38 +136,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="4">
-     <widget class="QPushButton" name="addBtn">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 238, 253);</string>
-      </property>
-      <property name="text">
-       <string>Add</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="4">
-     <widget class="QPushButton" name="submitBtn">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 238, 253);</string>
-      </property>
-      <property name="text">
-       <string>Submit</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="4">
-     <widget class="QPushButton" name="saveBtn">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 238, 253);
-background-color: rgb(255, 238, 253);</string>
-      </property>
-      <property name="text">
-       <string>Save</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2" colspan="2">
+    <item row="0" column="1">
      <widget class="QLineEdit" name="lineEdit">
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -149,25 +146,114 @@ background-color: rgb(255, 238, 253);</string>
       </property>
      </widget>
     </item>
-    <item row="9" column="3">
-     <widget class="QPushButton" name="nextBtn">
+    <item row="3" column="1">
+     <widget class="QCheckBox" name="checkBox">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QPushButton" name="addBtn">
       <property name="styleSheet">
        <string notr="true">background-color: rgb(255, 238, 253);</string>
       </property>
       <property name="text">
-       <string>Next</string>
+       <string>Add</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Address:</string>
+    <item row="5" column="4">
+     <widget class="QPushButton" name="delete_2">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 238, 253);
+background-color: rgb(255, 238, 253);</string>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <property name="text">
+       <string>Delete</string>
       </property>
      </widget>
+    </item>
+    <item row="4" column="4">
+     <widget class="QPushButton" name="editBtn">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 238, 253);</string>
+      </property>
+      <property name="text">
+       <string>Edit</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>2</number>
+      </property>
+      <property name="topMargin">
+       <number>2</number>
+      </property>
+      <property name="rightMargin">
+       <number>2</number>
+      </property>
+      <property name="bottomMargin">
+       <number>2</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="export_2">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 238, 253);</string>
+        </property>
+        <property name="text">
+         <string>Export to txt</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="sortBtn">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 238, 253);</string>
+        </property>
+        <property name="text">
+         <string>Sort</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="nextBtn">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 238, 253);</string>
+        </property>
+        <property name="text">
+         <string>Next</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="prevBtn">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 238, 253);</string>
+        </property>
+        <property name="text">
+         <string>Previous</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
