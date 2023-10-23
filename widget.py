@@ -112,7 +112,7 @@ class MyWidget(QWidget):
             self.objects[self.page].is_vip = self.ui.checkBox.isChecked()
             self.objects[self.page].address = self.ui.address.text()
             self.objects[self.page].age = self.ui.age.text()
-            self.objects[self.page].time = self.ui.time.text()
+            self.objects[self.page].date = datetime.strptime(self.ui.time.text(), date_format)
 
             self.controller.edit_object(self.objects[self.page])
         elif self.status == "None":
